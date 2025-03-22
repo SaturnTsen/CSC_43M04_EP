@@ -1,6 +1,10 @@
+.vscode
+
+data/
+*/work_dir
+
 __pycache__
 *.pyc
-.vscode
-*/work_dir
-FashionMNIST
-TD1/FashionMNIST
+*.pkl
+*.pt
+*.pth
