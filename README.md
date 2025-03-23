@@ -14,6 +14,10 @@ Generative and Adversarial Networks: auto-encoders, GANs, variational GANs
 Neural Network debugging and analysis: network visualisation, neural tranfer, using intermediate layers as features
 Video recognition: video understanding, classification, localization 
 
+## Additional Information
+
+- The folder `GenAI` contains supplementary code done by myself beyond the course program.
+
 ## Note
 
 This is my personal assignment for the course CSC_43M04_EP - Modal
