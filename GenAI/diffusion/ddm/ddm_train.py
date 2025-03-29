@@ -78,13 +78,6 @@ if __name__ == "__main__":
         shuffle=True
     )
     
-    # Prepare scheduler
-    T = 1000
-    diffusion_times = torch.linspace(0, 1, T)
-    linear_noise_rates, linear_signal_rates = linear_diffusion_schedule(diffusion_times)
-    cosine_noise_rates, cosine_signal_rates = cosine_diffusion_schedule(diffusion_times)
-    offset_cosine_noise_rates, offset_cosine_signal_rates = offset_cosine_diffusion_schedule(diffusion_times)
-
     ddm = DiffusionModel(UNet, offset_cosine_diffusion_schedule, EMA=0.999).to(device)
     
     # Checkpoint

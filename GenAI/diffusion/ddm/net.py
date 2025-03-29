@@ -14,21 +14,6 @@ IMAGE_SIZE = 64
 NOISE_EMBEDDING_SIZE = 32
 PLOT_DIFFUSION_STEPS = 20
 
-def linear_diffusion_schedule(diffusion_times):
-    min_rate = 0.0001
-    max_rate = 0.02
-    betas = min_rate + diffusion_times * (max_rate - min_rate)
-    alphas = 1 - betas
-    alpha_bars = torch.cumprod(alphas, dim=0)
-    signal_rates = torch.sqrt(alpha_bars)
-    noise_rates = torch.sqrt(1 - alpha_bars)
-    return noise_rates, signal_rates
-
-def cosine_diffusion_schedule(diffusion_times):
-    signal_rates = torch.cos(diffusion_times * torch.pi / 2)
-    noise_rates = torch.sin(diffusion_times * torch.pi / 2)
-    return noise_rates, signal_rates
-
 def offset_cosine_diffusion_schedule(diffusion_times):
     min_signal_rate = 0.02
     max_signal_rate = 0.95
@@ -226,10 +211,10 @@ class DiffusionModel(nn.Module):
         pred_images = (noisy_images - noise_rates * pred_noises) / signal_rates
         return pred_noises, pred_images
 
-    def reverse_diffusion(self, initial_noise, diffusion_steps):
+    def reverse_diffusion(self, initial_noise, diffusion_steps: int):
         num_images = initial_noise.shape[0]
         step_size = 1.0 / diffusion_steps
-        current_images = initial_noise
+        current_images = initial_noise # (B,C,H,W)
         for step in range(diffusion_steps):
             diffusion_times = torch.ones((num_images, 1, 1, 1)).to(initial_noise.device) - step * step_size
             noise_rates, signal_rates = self.diffusion_schedule(diffusion_times)
@@ -249,7 +234,7 @@ class DiffusionModel(nn.Module):
     def train_step(self, images, optimizer, criterion):
         self.train()
         images = self.normalizer(images)
-        noises = torch.randn_like(images).to(images.device)
+        noises = torch.randn_like(images)
 
         diffusion_times = torch.rand((images.size(0), 1, 1, 1)).to(images.device)
         noise_rates, signal_rates = self.diffusion_schedule(diffusion_times)
